@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -10,92 +11,31 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
-    background:#f4f7fa;
-    color:#222;
+    background:#f5f7fb;
+    color:#111;
 }
 
-.container{
-    display:flex;
-    min-height:100vh;
-}
-
-.sidebar{
-    width:320px;
-    background:#111827;
+header{
+    background:#0f172a;
     color:white;
-    padding:25px;
-    position:sticky;
-    top:0;
-    height:100vh;
-    overflow-y:auto;
-}
-
-.logo{
-    font-size:28px;
-    font-weight:bold;
-    margin-bottom:25px;
-}
-
-.section{
-    margin-bottom:30px;
-}
-
-.section h3{
-    margin-bottom:12px;
-}
-
-input{
-    width:100%;
-    padding:12px;
-    margin-bottom:10px;
-    border:none;
-    border-radius:8px;
-}
-
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.login-btn{
-    background:#2563eb;
-    color:white;
-}
-
-.subscribe-btn{
-    background:#10b981;
-    color:white;
-}
-
-.status{
-    margin-top:10px;
-    font-size:14px;
-}
-
-.main{
-    flex:1;
     padding:30px;
 }
 
-.header{
-    margin-bottom:25px;
+header h1{
+    font-size:2.5rem;
+    margin-bottom:10px;
 }
 
-.header h1{
-    font-size:38px;
+header p{
+    color:#cbd5e1;
 }
 
-.header p{
-    color:#555;
-    margin-top:10px;
+.container{
+    padding:25px;
 }
 
 .news-grid{
@@ -108,35 +48,30 @@ button{
     background:white;
     border-radius:12px;
     padding:20px;
-    box-shadow:0 4px 12px rgba(0,0,0,.08);
-    transition:.2s;
-}
-
-.card:hover{
-    transform:translateY(-4px);
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
 }
 
 .card h2{
-    font-size:20px;
-    margin-bottom:12px;
+    font-size:1.2rem;
+    margin-bottom:10px;
 }
 
 .card p{
     color:#555;
-    line-height:1.6;
+    line-height:1.5;
 }
 
-.card .meta{
-    margin-top:15px;
-    color:#888;
-    font-size:13px;
+.meta{
+    margin-top:12px;
+    font-size:.9rem;
+    color:#666;
 }
 
 .card a{
     display:inline-block;
     margin-top:15px;
-    text-decoration:none;
     color:#2563eb;
+    text-decoration:none;
     font-weight:bold;
 }
 
@@ -144,249 +79,133 @@ button{
     display:inline-block;
     background:#dbeafe;
     color:#1e40af;
-    padding:6px 10px;
+    padding:5px 10px;
     border-radius:20px;
-    margin-bottom:10px;
-    font-size:12px;
-    font-weight:bold;
-}
-
-.user-panel{
-    background:#1f2937;
-    padding:15px;
-    border-radius:10px;
-    margin-bottom:20px;
-}
-
-@media(max-width:900px){
-    .container{
-        flex-direction:column;
-    }
-
-    .sidebar{
-        width:100%;
-        height:auto;
-        position:relative;
-    }
+    font-size:.8rem;
+    margin-bottom:12px;
 }
 </style>
+
 </head>
 <body>
 
+<header>
+    <h1>Data Engineering Daily</h1>
+    <p>
+        Live aggregation of Data Engineering, Apache Spark,
+        Kafka, Airflow, Lakehouse, Cloud Data Platform,
+        and Analytics news.
+    </p>
+</header>
+
 <div class="container">
-
-    <aside class="sidebar">
-
-        <div class="logo">
-            Data Engineering Daily
+    <div class="news-grid" id="newsGrid">
+        <div class="card">
+            <h2>Loading latest articles...</h2>
         </div>
-
-        <div id="userArea"></div>
-
-        <!-- <div class="section">
-            <h3>Login</h3>
-
-            <input id="username" placeholder="Username">
-
-            <button class="login-btn" onclick="login()">
-                Login
-            </button>
-
-            <div class="status" id="loginStatus"></div>
-        </div>
-
-        <div class="section">
-            <h3>Subscribe - $1/month</h3>
-
-            <input id="email" placeholder="Email Address">
-
-            <button class="subscribe-btn" onclick="subscribe()">
-                Subscribe for $1
-            </button>
-
-            <div class="status" id="subscribeStatus"></div>
-        </div> -->
-
-        <div class="section">
-            <h3>Benefits</h3>
-            <ul style="padding-left:20px; line-height:1.8">
-                <li>Latest Data Engineering News</li>
-                <li>Streaming Technologies</li>
-                <li>Apache Spark Updates</li>
-                <li>Data Warehousing Trends</li>
-                <li>AI Infrastructure News</li>
-                <li>Save Reading Session</li>
-            </ul>
-        </div>
-
-    </aside>
-
-    <main class="main">
-
-        <div class="header">
-            <h1>Latest Data Engineering News</h1>
-            <p>
-                Curated updates from the world of data engineering,
-                analytics, AI infrastructure, streaming systems,
-                data lakes, warehouses, and cloud platforms.
-            </p>
-        </div>
-
-        <div class="news-grid" id="newsGrid"></div>
-
-    </main>
-
+    </div>
 </div>
 
 <script>
 
-const sampleNews = [
-{
-title:"Apache Spark Performance Improvements Released",
-source:"Data Engineering Daily",
-summary:"New optimizations improve distributed query execution and reduce shuffle costs in large-scale processing workloads.",
-url:"#"
-},
-{
-title:"Data Lakehouse Adoption Continues to Accelerate",
-source:"Industry Analysis",
-summary:"Organizations continue consolidating analytics platforms around modern lakehouse architectures.",
-url:"#"
-},
-{
-title:"Real-Time Streaming Pipelines Gain Momentum",
-source:"Streaming Weekly",
-summary:"More businesses are shifting toward event-driven architectures powered by Kafka and modern stream processing systems.",
-url:"#"
-},
-{
-title:"Cloud Data Warehouses See Increased Enterprise Spending",
-source:"Enterprise Research",
-summary:"Demand for scalable analytics infrastructure continues to grow across industries.",
-url:"#"
-},
-{
-title:"AI Infrastructure Creates New Data Engineering Challenges",
-source:"Infrastructure Report",
-summary:"Teams are building larger pipelines to support model training, observability, governance, and vector storage.",
-url:"#"
-},
-{
-title:"Data Governance Becomes Top Priority",
-source:"Governance Today",
-summary:"Organizations are investing heavily in lineage tracking, compliance, metadata management, and catalog systems.",
-url:"#"
-}
+const RSS_FEEDS = [
+    "https://www.reddit.com/r/dataengineering/.rss",
+    "https://www.reddit.com/r/apachekafka/.rss",
+    "https://www.reddit.com/r/bigdata/.rss",
+    "https://feeds.feedburner.com/oreilly/radar",
+    "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
 ];
+
+async function loadNews(){
+
+    const allArticles = [];
+
+    for(const feed of RSS_FEEDS){
+
+        try{
+
+            const response = await fetch(
+                "https://api.rss2json.com/v1/api.json?rss_url=" +
+                encodeURIComponent(feed)
+            );
+
+            const data = await response.json();
+
+            if(data.items){
+
+                data.items.forEach(item=>{
+
+                    allArticles.push({
+                        title:item.title,
+                        description:
+                            item.description
+                            .replace(/<[^>]*>/g,'')
+                            .replace(/\s+/g,' ')
+                            .substring(0,250),
+                        source:data.feed.title,
+                        link:item.link,
+                        date:item.pubDate
+                    });
+
+                });
+
+            }
+
+        }catch(error){
+            console.log(error);
+        }
+
+    }
+
+    allArticles.sort(
+        (a,b)=>new Date(b.date)-new Date(a.date)
+    );
+
+    renderNews(allArticles.slice(0,50));
+
+}
 
 function renderNews(news){
 
-const container = document.getElementById("newsGrid");
+    const container =
+        document.getElementById("newsGrid");
 
-container.innerHTML = "";
+    container.innerHTML = "";
 
-news.forEach(item => {
+    news.forEach(article=>{
 
-container.innerHTML += `
-<div class="card">
-    <div class="badge">DATA ENGINEERING</div>
+        container.innerHTML += `
+            <div class="card">
 
-    <h2>${item.title}</h2>
+                <div class="badge">
+                    DATA ENGINEERING
+                </div>
 
-    <p>${item.summary}</p>
+                <h2>${article.title}</h2>
 
-    <div class="meta">
-        Source: ${item.source}
-    </div>
+                <p>
+                    ${article.description}
+                </p>
 
-    // <a href="${item.url}">
-    //     Read More →
-    // </a>
-</div>
-`;
+                <div class="meta">
+                    ${article.source}
+                </div>
 
-});
-}
+                <a href="${article.link}"
+                   target="_blank">
+                    Read Full Article →
+                </a>
 
-function login(){
+            </div>
+        `;
 
-const username = document.getElementById("username").value;
-
-if(!username){
-    alert("Enter username");
-    return;
-}
-
-localStorage.setItem("de_user", username);
-
-document.getElementById("loginStatus").innerHTML =
-"Logged in successfully.";
-
-updateUserPanel();
-}
-
-function subscribe(){
-
-const email = document.getElementById("email").value;
-
-if(!email){
-    alert("Enter email");
-    return;
-}
-
-localStorage.setItem("de_subscriber", email);
-
-document.getElementById("subscribeStatus").innerHTML =
-"Subscription activated. $1/month.";
-}
-
-function updateUserPanel(){
-
-const user = localStorage.getItem("de_user");
-
-if(user){
-
-document.getElementById("userArea").innerHTML = `
-<div class="user-panel">
-    <strong>Welcome</strong><br><br>
-    ${user}
-</div>
-`;
+    });
 
 }
-}
 
-updateUserPanel();
-renderNews(sampleNews);
+loadNews();
 
-/*
-=========================================================
-REAL NEWS API INTEGRATION
-=========================================================
-
-Replace sampleNews with data from:
-
-NewsAPI
-GNews
-TheNewsAPI
-Reddit Data Engineering feeds
-Hacker News
-Apache Foundation blogs
-Databricks blog
-Snowflake blog
-Confluent blog
-Airflow blog
-
-Example:
-
-fetch("YOUR_API_ENDPOINT")
-.then(r=>r.json())
-.then(data=>{
-   renderNews(data.articles);
-});
-
-=========================================================
-*/
+setInterval(loadNews,300000);
 
 </script>
 
