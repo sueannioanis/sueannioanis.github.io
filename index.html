@@ -1,1 +1,138 @@
-index
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single File SPA</title>
+    <style>
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --primary-color: #007bff;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: #fff;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 15px;
+        }
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: bold;
+        }
+        nav a:hover {
+            color: var(--primary-color);
+        }
+        main {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Shell -->
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#settings">Settings</a>
+    </nav>
+
+    <!-- Dynamic Content Target Container -->
+    <main id="app-root">
+        <!-- Content injects here dynamically -->
+    </main>
+
+    <!-- Application Logic -->
+    <script>
+        // 1. Application Global State
+        const state = {
+            user: "Guest Visitor",
+            clickCount: 0
+        };
+
+        // 2. Client-Side Page Component Views
+        const views = {
+            home: () => `
+                <div class="card">
+                    <h1>Welcome, \${state.user}!</h1>
+                    <p>This entire experience is running dynamically inside a single standalone HTML file.</p>
+                </div>
+            `,
+            dashboard: () => `
+                <div class="card">
+                    <h1>Interactive Dashboard</h1>
+                    <p>State tracker mechanism instance:</p>
+                    <button id="counter-btn">Clicked \${state.clickCount} times</button>
+                </div>
+            `,
+            settings: () => `
+                <div class="card">
+                    <h1>Profile Settings</h1>
+                    <label>Update Username:</label><br><br>
+                    <input type="text" id="username-input" value="\${state.user}">
+                </div>
+            `
+        };
+
+        // 3. Central Client-Side Router
+        function router() {
+            // Read route from hash or default to home
+            const hash = window.location.hash.replace('#', '') || 'home';
+            
+            // Fallback to home view if route string does not exist
+            const renderView = views[hash] || views['home'];
+            
+            // Ingest views string markup into active DOM container
+            const root = document.getElementById('app-root');
+            root.innerHTML = renderView();
+            
+            // Re-bind event handlers dynamically based on current template view
+            bindViewEvents(hash);
+        }
+
+        // 4. View-Specific Event Handlers
+        function bindViewEvents(currentRoute) {
+            if (currentRoute === 'dashboard') {
+                document.getElementById('counter-btn').addEventListener('click', () => {
+                    state.clickCount++;
+                    router(); // Re-render local layout view tree 
+                });
+            }
+            if (currentRoute === 'settings') {
+                document.getElementById('username-input').addEventListener('input', (e) => {
+                    state.user = e.target.value;
+                });
+            }
+        }
+
+        // 5. Browser Navigation Lifecycle Listeners
+        window.addEventListener('hashchange', router);
+        window.addEventListener('DOMContentLoaded', router);
+    </script>
+</body>
+</html>
