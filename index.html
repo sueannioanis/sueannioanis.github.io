@@ -3,378 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DataEng Pulse | Premium News Aggregator</title>
+    <title>DataEng Pulse | Instant Aggregator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
 
-    <nav class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4">
+    <nav class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50 px-4 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 p-2 rounded-lg text-white font-bold tracking-wider text-xl shadow-lg shadow-indigo-500/20">
-                    <i class="fa-solid fa-database animate-pulse"></i>
+                <div class="bg-indigo-600 p-2 rounded-lg text-white text-xl shadow-lg shadow-indigo-500/20">
+                    <i class="fa-solid fa-chart-network animate-pulse"></i>
                 </div>
                 <div>
                     <span class="text-lg font-bold text-white tracking-tight">DataEng<span class="text-indigo-400">Pulse</span></span>
-                    <span class="block text-[10px] text-slate-400 font-mono">v1.0 // Premium Aggregator</span>
+                    <span class="block text-[10px] text-slate-400 font-mono">Instant News Pipeline</span>
                 </div>
             </div>
-            
-            <div id="nav-auth-section" class="flex items-center gap-4">
-                </div>
+            <div class="flex items-center gap-2">
+                <select id="feed-filter" class="bg-slate-800 border border-slate-700 text-xs text-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">All Channels</option>
+                    <option value="reddit">Reddit /r/dataengineering</option>
+                    <option value="hacker">HackerNews / Tech</option>
+                </select>
+                <button id="refresh-feed" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg text-xs transition font-medium flex items-center gap-1">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+            </div>
         </div>
     </nav>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-8">
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <section id="auth-paywall-view" class="hidden max-w-md mx-auto my-12 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
-            <div class="p-8 text-center gradient-bg border-b border-slate-700">
-                <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Premium Access</span>
-                <h2 class="text-2xl font-bold mt-4 text-white">Data Engineering Pipeline News</h2>
-                <p class="text-slate-400 text-sm mt-2">Aggregate live updates from Apache, Snowflake, Databricks, AWS Data, and more.</p>
-            </div>
-            
-            <div class="p-8 space-y-6">
-                <div id="auth-form-step">
-                    <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wide mb-3"><i class="fa-solid fa-user-lock text-indigo-400 mr-2"></i>Step 1: Secure Login / Register</h3>
-                    <form id="login-form" class="space-y-3">
-                        <input type="email" id="auth-email" required placeholder="Enter your email" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white">
-                        <input type="password" id="auth-password" required placeholder="Create or enter password" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-white">
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-lg text-sm transition">
-                            Verify Account & Continue
-                        </button>
-                    </form>
-                </div>
-
-                <div id="payment-step" class="hidden space-y-4 pt-4 border-t border-slate-700">
-                    <div class="bg-indigo-950/40 border border-indigo-800/50 p-4 rounded-xl text-center">
-                        <p class="text-xs text-indigo-300 font-medium">Lifetime Dashboard Pass</p>
-                        <p class="text-3xl font-extrabold text-white mt-1">$1.00 <span class="text-xs font-normal text-slate-400">USD</span></p>
-                    </div>
-                    <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wide text-center">Activate Subscription</h3>
-                    <div id="paypal-button-container"></div>
-                    <button id="bypass-pay-mock" class="w-full text-xs text-slate-500 hover:text-slate-400 underline block text-center">
-                        [Dev Sandbox] Bypass and auto-authorize
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <section id="dashboard-view" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-800 p-4 rounded-xl border border-slate-700">
-                <div>
-                    <h2 class="text-xl font-bold text-white">Pipeline Aggregator Feed</h2>
-                    <p class="text-xs text-slate-400">Real-time developer & data architect updates</p>
-                </div>
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <select id="feed-filter" class="bg-slate-900 border border-slate-700 text-xs text-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="all">All Sources</option>
-                        <option value="reddit">Reddit /r/dataengineering</option>
-                        <option value="hacker">HackerNews (Data Tech)</option>
-                    </select>
-                    <button id="refresh-feed" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg text-sm transition font-medium flex items-center gap-2 shrink-0">
-                        <i class="fa-solid fa-rotate"></i> <span class="hidden sm:inline">Refresh</span>
-                    </button>
-                </div>
+        <section class="lg:col-span-2 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h2 class="text-lg font-semibold text-white tracking-tight">
+                    <i class="fa-solid fa-bolt text-amber-400 mr-2"></i>Live Stream Ingestion
+                </h2>
+                <span class="text-xs text-slate-500 font-mono" id="stream-counter">Loading pipelines...</span>
             </div>
 
-            <div id="feed-loader" class="text-center py-24">
-                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-indigo-500 mb-4"></i>
-                <p class="text-slate-400 text-sm">Ingesting stream data...</p>
+            <div id="feed-loader" class="text-center py-20 bg-slate-800/40 border border-slate-800 rounded-xl">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-indigo-500 mb-3"></i>
+                <p class="text-slate-400 text-xs">Querying data infrastructure feeds...</p>
             </div>
 
-            <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
-                </div>
-        </section>
-
-    </main>
-
-    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500 mt-12 bg-slate-950">
-        &copy; 2026 DataEng Pulse App. Secure Client-Side Execution Layer.
-    </footer>
-
-    <script>
-        // --- CONSTANTS & CONFIGS ---
-        const LOCAL_STORAGE_KEY = "dataeng_pulse_session";
-        
-        // --- APPLICATION STATE ---
-        let appState = {
-            isLoggedIn: false,
-            isSubscribed: false,
-            userEmail: "",
-            rawFeedData: []
-        };
-
-        // --- DOM ELEMENTS ---
-        const authPaywallView = document.getElementById('auth-paywall-view');
-        const dashboardView = document.getElementById('dashboard-view');
-        const authFormStep = document.getElementById('auth-form-step');
-        const paymentStep = document.getElementById('payment-step');
-        const loginForm = document.getElementById('login-form');
-        const navAuthSection = document.getElementById('nav-auth-section');
-        const newsGrid = document.getElementById('news-grid');
-        const feedLoader = document.getElementById('feed-loader');
-        const feedFilter = document.getElementById('feed-filter');
-        const refreshFeedBtn = document.getElementById('refresh-feed');
-
-        // --- SESSION INITIALIZATION ---
-        function initApp() {
-            const savedSession = localStorage.getItem(LOCAL_STORAGE_KEY);
-            if (savedSession) {
-                try {
-                    const parsed = JSON.parse(savedSession);
-                    // Sessions are structured to match valid payment criteria
-                    if (parsed.isLoggedIn && parsed.isSubscribed) {
-                        appState = { ...appState, ...parsed };
-                    }
-                } catch (e) {
-                    localStorage.removeItem(LOCAL_STORAGE_KEY);
-                }
-            }
-            renderViews();
-            if (appState.isSubscribed) {
-                fetchAggregateNews();
-            }
-        }
-
-        // --- UI ROUTER / RENDERING ENGINE ---
-        function renderViews() {
-            // Render Navbar status
-            if (appState.isLoggedIn && appState.isSubscribed) {
-                navAuthSection.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="text-right hidden sm:block">
-                            <p class="text-xs text-slate-400 font-mono">${appState.userEmail}</p>
-                            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold uppercase">PRO Tier</span>
-                        </div>
-                        <button onclick="handleLogout()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg text-xs transition border border-slate-700">
-                            <i class="fa-solid fa-right-from-bracket"></i> Sign Out
-                        </button>
-                    </div>
-                `;
-                authPaywallView.classList.add('hidden');
-                dashboardView.classList.remove('hidden');
-            } else {
-                navAuthSection.innerHTML = `
-                    <span class="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-lg">
-                        <i class="fa-solid fa-shield"></i> Standard Content Locked
-                    </span>
-                `;
-                dashboardView.classList.add('hidden');
-                authPaywallView.classList.remove('hidden');
-            }
-        }
-
-        // --- CONTROLLERS & ACTIONS ---
-        
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            // Simple mock validation setting user record
-            appState.isLoggedIn = true;
-            appState.userEmail = email;
-            
-            // Advance UI state to Payment view phase
-            authFormStep.classList.add('hidden');
-            paymentStep.classList.remove('hidden');
-            
-            // Render out initialization of PayPal target
-            initializePayPal();
-        });
-
-        function handlePaymentSuccess(details) {
-            appState.isSubscribed = true;
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(appState));
-            renderViews();
-            fetchAggregateNews();
-        }
-
-        function handleLogout() {
-            localStorage.removeItem(LOCAL_STORAGE_KEY);
-            appState = { isLoggedIn: false, isSubscribed: false, userEmail: "", rawFeedData: [] };
-            authFormStep.classList.remove('hidden');
-            paymentStep.classList.add('hidden');
-            loginForm.reset();
-            renderViews();
-        }
-
-        // Dev Sandbox Override Shortcut Bypass
-        document.getElementById('bypass-pay-mock').addEventListener('click', () => {
-            handlePaymentSuccess({ id: 'MOCK_TXN_ID' });
-        });
-
-        // --- NEWS DATA AGGREGATION & INGESTION (API LAYER) ---
-        async function fetchAggregateNews() {
-            feedLoader.classList.remove('hidden');
-            newsGrid.classList.add('hidden');
-            
-            try {
-                // Fetch high-quality data architecture entries using public RSS-to-JSON engine bridges
-                const redditUrl = "https://api.rss2json.com/v1/api.json?rss_url=https://www.reddit.com/r/dataengineering/new.rss";
-                const hackernewsUrl = "https://hnapi.firebaseio.com/v0/topstories.json"; // We will mock standard items if rate limit fails
-                
-                const response = await fetch(redditUrl);
-                const data = await response.json();
-                
-                let processedItems = [];
-                
-                if(data.status === 'ok') {
-                    processedItems = data.items.map(item => ({
-                        id: item.guid,
-                        title: item.title,
-                        link: item.link,
-                        author: item.author || 'Reddit Community',
-                        source: 'reddit',
-                        timestamp: item.pubDate,
-                        description: item.content ? item.content.replace(/<[^>]*>/g, '').substring(0, 160) + '...' : 'Data architectural engineering updates.'
-                    }));
-                }
-
-                // Fallback static high-fidelity records if network interfaces block RSS fetching
-                if (processedItems.length === 0) {
-                    processedItems = getFallbackData();
-                }
-
-                appState.rawFeedData = processedItems;
-                renderFeed(processedItems);
-
-            } catch (error) {
-                console.error("Pipeline Sync Error:", error);
-                renderFeed(getFallbackData());
-            } finally {
-                feedLoader.classList.add('hidden');
-                newsGrid.classList.remove('hidden');
-            }
-        }
-
-        function renderFeed(items) {
-            newsGrid.innerHTML = '';
-            
-            if(items.length === 0) {
-                newsGrid.innerHTML = `<div class="col-span-full text-center text-slate-500 py-12">No recent news pipelines located.</div>`;
-                return;
-            }
-
-            items.forEach(item => {
-                const badgeColor = item.source === 'reddit' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
-                const card = document.createElement('div');
-                card.className = "bg-slate-800 border border-slate-700 rounded-xl p-5 hover:border-slate-600 transition flex flex-col justify-between group";
-                
-                card.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-start gap-2 mb-3">
-                            <span class="text-[10px] font-bold tracking-wider uppercase border px-2 py-0.5 rounded ${badgeColor}">
-                                ${item.source}
-                            </span>
-                            <span class="text-[11px] font-mono text-slate-500">${new Date(item.timestamp).toLocaleDateString()}</span>
-                        </div>
-                        <a href="${item.link}" target="_blank" class="text-white font-medium text-base group-hover:text-indigo-400 transition line-clamp-2 block mb-2">
-                            ${escapeHTML(item.title)} <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-0 group-hover:opacity-100 transition-opacity ml-1"></i>
-                        </a>
-                        <p class="text-xs text-slate-400 line-clamp-3 mb-4">${escapeHTML(item.description)}</p>
-                    </div>
-                    <div class="pt-3 border-t border-slate-700/60 flex justify-between items-center text-[11px] text-slate-500">
-                        <span>By: <span class="text-slate-300 font-mono">${escapeHTML(item.author)}</span></span>
-                        <a href="${item.link}" target="_blank" class="text-indigo-400 font-medium hover:underline">Read Post</a>
-                    </div>
-                `;
-                newsGrid.appendChild(card);
-            });
-        }
-
-        // --- FILTER AND REFRESH LISTENERS ---
-        feedFilter.addEventListener('change', (e) => {
-            const val = e.target.value;
-            if (val === 'all') {
-                renderFeed(appState.rawFeedData);
-            } else {
-                const filtered = appState.rawFeedData.filter(i => i.source === val);
-                renderFeed(filtered);
-            }
-        });
-
-        refreshFeedBtn.addEventListener('click', fetchAggregateNews);
-
-        // --- PAYPAL BUTTON INTEGRATION ---
-        let paypalRendered = false;
-        function initializePayPal() {
-            if (paypalRendered) return;
-            
-            paypal.Buttons({
-                createOrder: function(data, actions) {
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: '1.00',
-                                currency_code: 'USD'
-                            },
-                            description: 'DataEng Pulse Lifetime Premium Access Subscription'
-                        }]
-                    });
-                },
-                onApprove: function(data, actions) {
-                    return actions.order.capture().then(function(details) {
-                        handlePaymentSuccess(details);
-                    });
-                },
-                onError: function(err) {
-                    alert('Payment Transaction Error processing pipeline initialization setup.');
-                    console.error(err);
-                }
-            }).render('#paypal-button-container');
-            
-            paypalRendered = true;
-        }
-
-        // --- SECURITY / UTILITY UTILS ---
-        function escapeHTML(str) {
-            if(!str) return '';
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
-        }
-
-        function getFallbackData() {
-            return [
-                {
-                    id: "fb1",
-                    title: "Building an Enterprise Data Mesh with Apache Iceberg and Polaris Catalog",
-                    link: "https://github.com",
-                    author: "data_architect_99",
-                    source: "hacker",
-                    timestamp: new Date().toISOString(),
-                    description: "An deep dive exploration into orchestrating decoupled distributed multi-cloud analytical tables using emerging catalog control standards."
-                },
-                {
-                    id: "fb2",
-                    title: "Why our engineering team migrated away from dbt Core back to standard Stored Procedures",
-                    link: "https://reddit.com",
-                    author: "pipeline_guru",
-                    source: "reddit",
-                    timestamp: new Date().toISOString(),
-                    description: "Pragmatic trade-offs concerning continuous integration loops, state management scaling over-complex configurations, and underlying cloud warehouse execution bills."
-                },
-                {
-                    id: "fb3",
-                    title: "Streaming Analytics: Benchmarking Apache Flink versus RisingWave in 2026",
-                    link: "https://github.com",
-                    author: "stream_master",
-                    source: "hacker",
-                    timestamp: new Date().toISOString(),
-                    description: "Performance metric analysis exploring throughput barriers, memory footprints, state recovery checkpointing speeds, and overall Developer Experience (DX)."
-                }
-            ];
-        }
-
-        // Run application on load loop
-        window.addEventListener('DOMContentLoaded', initApp);
-    </script>
-</body>
-</html>
+            <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2
