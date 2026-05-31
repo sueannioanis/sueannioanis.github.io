@@ -1,56 +1,394 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DataEng Pulse | Instant Aggregator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Engineering Daily</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#f4f7fa;
+    color:#222;
+}
+
+.container{
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width:320px;
+    background:#111827;
+    color:white;
+    padding:25px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:25px;
+}
+
+.section{
+    margin-bottom:30px;
+}
+
+.section h3{
+    margin-bottom:12px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-bottom:10px;
+    border:none;
+    border-radius:8px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.login-btn{
+    background:#2563eb;
+    color:white;
+}
+
+.subscribe-btn{
+    background:#10b981;
+    color:white;
+}
+
+.status{
+    margin-top:10px;
+    font-size:14px;
+}
+
+.main{
+    flex:1;
+    padding:30px;
+}
+
+.header{
+    margin-bottom:25px;
+}
+
+.header h1{
+    font-size:38px;
+}
+
+.header p{
+    color:#555;
+    margin-top:10px;
+}
+
+.news-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+    transition:.2s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+}
+
+.card h2{
+    font-size:20px;
+    margin-bottom:12px;
+}
+
+.card p{
+    color:#555;
+    line-height:1.6;
+}
+
+.card .meta{
+    margin-top:15px;
+    color:#888;
+    font-size:13px;
+}
+
+.card a{
+    display:inline-block;
+    margin-top:15px;
+    text-decoration:none;
+    color:#2563eb;
+    font-weight:bold;
+}
+
+.badge{
+    display:inline-block;
+    background:#dbeafe;
+    color:#1e40af;
+    padding:6px 10px;
+    border-radius:20px;
+    margin-bottom:10px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.user-panel{
+    background:#1f2937;
+    padding:15px;
+    border-radius:10px;
+    margin-bottom:20px;
+}
+
+@media(max-width:900px){
+    .container{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+        height:auto;
+        position:relative;
+    }
+}
+</style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+<body>
 
-    <nav class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50 px-4 py-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 p-2 rounded-lg text-white text-xl shadow-lg shadow-indigo-500/20">
-                    <i class="fa-solid fa-chart-network animate-pulse"></i>
-                </div>
-                <div>
-                    <span class="text-lg font-bold text-white tracking-tight">DataEng<span class="text-indigo-400">Pulse</span></span>
-                    <span class="block text-[10px] text-slate-400 font-mono">Instant News Pipeline</span>
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <select id="feed-filter" class="bg-slate-800 border border-slate-700 text-xs text-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="all">All Channels</option>
-                    <option value="reddit">Reddit /r/dataengineering</option>
-                    <option value="hacker">HackerNews / Tech</option>
-                </select>
-                <button id="refresh-feed" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg text-xs transition font-medium flex items-center gap-1">
-                    <i class="fa-solid fa-rotate"></i>
-                </button>
-            </div>
+<div class="container">
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Data Engineering Daily
         </div>
-    </nav>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <section class="lg:col-span-2 space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                <h2 class="text-lg font-semibold text-white tracking-tight">
-                    <i class="fa-solid fa-bolt text-amber-400 mr-2"></i>Live Stream Ingestion
-                </h2>
-                <span class="text-xs text-slate-500 font-mono" id="stream-counter">Loading pipelines...</span>
-            </div>
+        <div id="userArea"></div>
 
-            <div id="feed-loader" class="text-center py-20 bg-slate-800/40 border border-slate-800 rounded-xl">
-                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-indigo-500 mb-3"></i>
-                <p class="text-slate-400 text-xs">Querying data infrastructure feeds...</p>
-            </div>
+        <div class="section">
+            <h3>Login</h3>
 
-            <div id="news-grid" class="grid grid-cols-1 md:grid-cols-2
+            <input id="username" placeholder="Username">
+
+            <button class="login-btn" onclick="login()">
+                Login
+            </button>
+
+            <div class="status" id="loginStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>Subscribe - $1/month</h3>
+
+            <input id="email" placeholder="Email Address">
+
+            <button class="subscribe-btn" onclick="subscribe()">
+                Subscribe for $1
+            </button>
+
+            <div class="status" id="subscribeStatus"></div>
+        </div>
+
+        <div class="section">
+            <h3>Benefits</h3>
+            <ul style="padding-left:20px; line-height:1.8">
+                <li>Latest Data Engineering News</li>
+                <li>Streaming Technologies</li>
+                <li>Apache Spark Updates</li>
+                <li>Data Warehousing Trends</li>
+                <li>AI Infrastructure News</li>
+                <li>Save Reading Session</li>
+            </ul>
+        </div>
+
+    </aside>
+
+    <main class="main">
+
+        <div class="header">
+            <h1>Latest Data Engineering News</h1>
+            <p>
+                Curated updates from the world of data engineering,
+                analytics, AI infrastructure, streaming systems,
+                data lakes, warehouses, and cloud platforms.
+            </p>
+        </div>
+
+        <div class="news-grid" id="newsGrid"></div>
+
+    </main>
+
+</div>
+
+<script>
+
+const sampleNews = [
+{
+title:"Apache Spark Performance Improvements Released",
+source:"Data Engineering Daily",
+summary:"New optimizations improve distributed query execution and reduce shuffle costs in large-scale processing workloads.",
+url:"#"
+},
+{
+title:"Data Lakehouse Adoption Continues to Accelerate",
+source:"Industry Analysis",
+summary:"Organizations continue consolidating analytics platforms around modern lakehouse architectures.",
+url:"#"
+},
+{
+title:"Real-Time Streaming Pipelines Gain Momentum",
+source:"Streaming Weekly",
+summary:"More businesses are shifting toward event-driven architectures powered by Kafka and modern stream processing systems.",
+url:"#"
+},
+{
+title:"Cloud Data Warehouses See Increased Enterprise Spending",
+source:"Enterprise Research",
+summary:"Demand for scalable analytics infrastructure continues to grow across industries.",
+url:"#"
+},
+{
+title:"AI Infrastructure Creates New Data Engineering Challenges",
+source:"Infrastructure Report",
+summary:"Teams are building larger pipelines to support model training, observability, governance, and vector storage.",
+url:"#"
+},
+{
+title:"Data Governance Becomes Top Priority",
+source:"Governance Today",
+summary:"Organizations are investing heavily in lineage tracking, compliance, metadata management, and catalog systems.",
+url:"#"
+}
+];
+
+function renderNews(news){
+
+const container = document.getElementById("newsGrid");
+
+container.innerHTML = "";
+
+news.forEach(item => {
+
+container.innerHTML += `
+<div class="card">
+    <div class="badge">DATA ENGINEERING</div>
+
+    <h2>${item.title}</h2>
+
+    <p>${item.summary}</p>
+
+    <div class="meta">
+        Source: ${item.source}
+    </div>
+
+    <a href="${item.url}">
+        Read More →
+    </a>
+</div>
+`;
+
+});
+}
+
+function login(){
+
+const username = document.getElementById("username").value;
+
+if(!username){
+    alert("Enter username");
+    return;
+}
+
+localStorage.setItem("de_user", username);
+
+document.getElementById("loginStatus").innerHTML =
+"Logged in successfully.";
+
+updateUserPanel();
+}
+
+function subscribe(){
+
+const email = document.getElementById("email").value;
+
+if(!email){
+    alert("Enter email");
+    return;
+}
+
+localStorage.setItem("de_subscriber", email);
+
+document.getElementById("subscribeStatus").innerHTML =
+"Subscription activated. $1/month.";
+}
+
+function updateUserPanel(){
+
+const user = localStorage.getItem("de_user");
+
+if(user){
+
+document.getElementById("userArea").innerHTML = `
+<div class="user-panel">
+    <strong>Welcome</strong><br><br>
+    ${user}
+</div>
+`;
+
+}
+}
+
+updateUserPanel();
+renderNews(sampleNews);
+
+/*
+=========================================================
+REAL NEWS API INTEGRATION
+=========================================================
+
+Replace sampleNews with data from:
+
+NewsAPI
+GNews
+TheNewsAPI
+Reddit Data Engineering feeds
+Hacker News
+Apache Foundation blogs
+Databricks blog
+Snowflake blog
+Confluent blog
+Airflow blog
+
+Example:
+
+fetch("YOUR_API_ENDPOINT")
+.then(r=>r.json())
+.then(data=>{
+   renderNews(data.articles);
+});
+
+=========================================================
+*/
+
+</script>
+
+</body>
+</html>
