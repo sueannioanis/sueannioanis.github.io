@@ -14,188 +14,150 @@
 }
 
 body{
-    background:#f4f6f9;
-    color:#111827;
+    background:#f4f7fa;
+    color:#222;
 }
 
-header{
-    background:#0f172a;
-    color:white;
-    padding:40px;
+.main{
+    width:100%;
+    padding:30px;
 }
 
-header h1{
-    font-size:3rem;
+.header{
+    margin-bottom:25px;
+}
+
+.header h1{
+    font-size:38px;
     margin-bottom:10px;
 }
 
-header p{
-    color:#cbd5e1;
-    font-size:1.1rem;
-}
-
-.container{
-    max-width:1600px;
-    margin:auto;
-    padding:30px;
+.header p{
+    color:#555;
 }
 
 .news-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(500px,1fr));
-    gap:24px;
+    grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+    gap:20px;
 }
 
 .card{
     background:white;
-    border-radius:24px;
-    padding:28px;
-    box-shadow:0 4px 18px rgba(0,0,0,.08);
-    overflow:hidden;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+    transition:.2s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+}
+
+.card h2{
+    font-size:20px;
+    margin-bottom:12px;
+}
+
+.card p{
+    color:#555;
+    line-height:1.6;
+}
+
+.card .meta{
+    margin-top:15px;
+    color:#888;
+    font-size:13px;
+}
+
+.card a{
+    display:inline-block;
+    margin-top:15px;
+    text-decoration:none;
+    color:#2563eb;
+    font-weight:bold;
 }
 
 .badge{
     display:inline-block;
-    padding:10px 20px;
-    border-radius:999px;
     background:#dbeafe;
     color:#1e40af;
-    font-size:.9rem;
-    font-weight:700;
-    margin-bottom:22px;
-}
-
-.title{
-    font-size:2.2rem;
-    line-height:1.15;
-    margin-bottom:20px;
-    overflow-wrap:anywhere;
-    word-break:break-word;
-}
-
-.description{
-    color:#555;
-    font-size:1rem;
-    line-height:1.8;
-
-    display:-webkit-box;
-    -webkit-box-orient:vertical;
-    -webkit-line-clamp:6;
-
-    overflow:hidden;
-    text-overflow:ellipsis;
-
-    overflow-wrap:anywhere;
-    word-break:break-word;
-}
-
-.meta{
-    margin-top:24px;
-    color:#666;
-    font-size:1rem;
-}
-
-.article-link{
-    display:inline-block;
-    margin-top:24px;
-    font-size:1.2rem;
+    padding:6px 10px;
+    border-radius:20px;
+    margin-bottom:10px;
+    font-size:12px;
     font-weight:bold;
-    color:#2563eb;
-    text-decoration:none;
-}
-
-.article-link:hover{
-    text-decoration:underline;
-}
-
-.loading{
-    text-align:center;
-    padding:60px;
-    font-size:1.3rem;
 }
 
 @media(max-width:900px){
-
     .news-grid{
         grid-template-columns:1fr;
-    }
-
-    .title{
-        font-size:1.6rem;
-    }
-
-    header h1{
-        font-size:2rem;
     }
 }
 </style>
 </head>
 <body>
 
-<header>
-    <h1>Data Engineering Daily</h1>
+<div class="main">
 
-    <p>
-        Live aggregation of Data Engineering, Spark,
-        Kafka, Airflow, Data Warehousing, Lakehouse,
-        Analytics Engineering and Cloud Platform news.
-    </p>
-</header>
-
-<div class="container">
-
-    <div id="newsGrid" class="news-grid">
-
-        <div class="loading">
-            Loading latest data engineering news...
-        </div>
-
+    <div class="header">
+        <h1>Data Engineering Daily</h1>
+        <p>
+            Real-time aggregation of data engineering,
+            Apache Spark, Kafka, Airflow, data warehouse,
+            cloud analytics, lakehouse, and infrastructure news.
+        </p>
     </div>
+
+    <div class="news-grid" id="newsGrid"></div>
 
 </div>
 
 <script>
 
-const RSS_FEEDS = [
+const feeds = [
+    "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml",
+    "https://feeds.feedburner.com/oreilly/radar",
     "https://www.reddit.com/r/dataengineering/.rss",
     "https://www.reddit.com/r/apachekafka/.rss",
-    "https://www.reddit.com/r/bigdata/.rss",
-    "https://feeds.feedburner.com/oreilly/radar",
-    "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
+    "https://www.reddit.com/r/bigdata/.rss"
 ];
 
 async function loadNews() {
 
-    const articles = [];
+    const container = document.getElementById("newsGrid");
 
-    for (const feed of RSS_FEEDS) {
+    container.innerHTML = `
+        <div class="card">
+            <h2>Loading latest data engineering news...</h2>
+        </div>
+    `;
+
+    let allArticles = [];
+
+    for (const feed of feeds) {
 
         try {
 
-            const response = await fetch(
+            const url =
                 "https://api.rss2json.com/v1/api.json?rss_url=" +
-                encodeURIComponent(feed)
-            );
+                encodeURIComponent(feed);
 
+            const response = await fetch(url);
             const data = await response.json();
 
             if (data.items) {
 
                 data.items.forEach(item => {
 
-                    const cleanDescription =
-                        (item.description || "")
-                        .replace(/<[^>]*>/g, "")
-                        .replace(/https?:\/\/[^\s]+/g, "")
-                        .replace(/www\.[^\s]+/g, "")
-                        .replace(/\s+/g, " ")
-                        .trim();
-
-                    articles.push({
-                        title: item.title || "Untitled",
-                        description: cleanDescription,
-                        source: data.feed.title || "Unknown Source",
-                        link: item.link,
+                    allArticles.push({
+                        title: item.title,
+                        summary: item.description
+                            .replace(/<[^>]+>/g, "")
+                            .replace(/\s+/g, " ")
+                            .substring(0, 250) + "...",
+                        source: data.feed.title,
+                        url: item.link,
                         date: item.pubDate
                     });
 
@@ -204,98 +166,65 @@ async function loadNews() {
             }
 
         } catch (error) {
-
-            console.error(
-                "Feed failed:",
-                feed,
-                error
-            );
-
+            console.error(error);
         }
 
     }
 
-    articles.sort(
-        (a,b) =>
-            new Date(b.date) -
-            new Date(a.date)
+    allArticles.sort(
+        (a, b) => new Date(b.date) - new Date(a.date)
     );
 
-    renderNews(
-        articles.slice(0,50)
-    );
-
+    renderNews(allArticles.slice(0, 50));
 }
 
 function renderNews(news) {
 
-    const container =
-        document.getElementById("newsGrid");
+    const container = document.getElementById("newsGrid");
 
-    if (!news.length) {
+    container.innerHTML = "";
 
+    if(news.length === 0){
         container.innerHTML = `
-            <div class="loading">
-                No articles available.
+            <div class="card">
+                <h2>No news available</h2>
             </div>
         `;
-
         return;
     }
 
-    container.innerHTML = news.map(article => `
-        <article class="card">
+    news.forEach(item => {
 
-            <div class="badge">
-                DATA ENGINEERING
+        container.innerHTML += `
+            <div class="card">
+
+                <div class="badge">
+                    DATA ENGINEERING
+                </div>
+
+                <h2>${item.title}</h2>
+
+                <p>${item.summary}</p>
+
+                <div class="meta">
+                    ${item.source}
+                </div>
+
+                <a href="${item.url}" target="_blank">
+                    Read Full Article →
+                </a>
+
             </div>
+        `;
 
-            <h2 class="title">
-                ${escapeHtml(article.title)}
-            </h2>
-
-            <p class="description">
-                ${escapeHtml(article.description)}
-            </p>
-
-            <div class="meta">
-                ${escapeHtml(article.source)}
-            </div>
-
-            <a
-                class="article-link"
-                href="${article.link}"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Read Full Article →
-            </a>
-
-        </article>
-    `).join("");
-
-}
-
-function escapeHtml(text) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent = text;
-
-    return div.innerHTML;
-
+    });
 }
 
 loadNews();
 
-setInterval(
-    loadNews,
-    300000
-);
+setInterval(loadNews, 300000);
 
 </script>
 
 </body>
 </html>
-
