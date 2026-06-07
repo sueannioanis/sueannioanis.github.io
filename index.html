@@ -42,6 +42,16 @@ body{
     gap:20px;
 }
 
+    /* This applies only to screens that are 768px wide or smaller */
+@media (max-width: 768px) {
+  .news-grid {
+    display: flex;
+    flex-wrap: wrap; /* Wraps items to the next line */
+    /* OR change direction entirely to stack them: */
+    /* flex-direction: column; */
+  }
+}
+
 .card{
     background:white;
     border-radius:12px;
